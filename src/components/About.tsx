@@ -1,12 +1,12 @@
 import React from 'react';
 
 const About: React.FC = () => {
-  const stats = [
-    { number: "500+", label: "Proyectos Completados", color: "cardinal-red" },
-    { number: "50+", label: "Clientes Satisfechos", color: "cardinal-green" },
-    { number: "24/7", label: "Soporte Técnico", color: "cardinal-blue" },
-    { number: "5+", label: "Años de Experiencia", color: "cardinal-black" }
-  ];
+  // const stats = [
+  //   { number: "500+", label: "Proyectos Completados", color: "cardinal-red" },
+  //   { number: "50+", label: "Clientes Satisfechos", color: "cardinal-green" },
+  //   { number: "24/7", label: "Soporte Técnico", color: "cardinal-blue" },
+  //   { number: "5+", label: "Años de Experiencia", color: "cardinal-black" }
+  // ];
 
   const values = [
     {
@@ -38,7 +38,7 @@ const About: React.FC = () => {
   return (
     <section id="about" className="section-full bg-gradient-to-tr from-black via-gray-900 to-black">
       <div className="section-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16  items-end ">
           {/* Left Column - Content */}
           <div className="space-y-8">
             <div>
@@ -73,7 +73,7 @@ const About: React.FC = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 gap-6">
+            {/* <div className="grid grid-cols-2 gap-6">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
                   <div className={`text-3xl font-display font-bold mb-2 text-${stat.color}-400`}>
@@ -84,7 +84,7 @@ const About: React.FC = () => {
                   </div>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
 
           {/* Right Column - Visual Elements */}

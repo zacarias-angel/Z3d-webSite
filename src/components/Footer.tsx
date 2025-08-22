@@ -151,31 +151,6 @@ const Footer: React.FC = () => {
             </ul>
           </div>
         </div>
-
-        {/* Newsletter Signup */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
-          <div className="bg-gradient-to-r from-cardinal-red-500/10 to-cardinal-blue-500/10 rounded-xl p-6 border border-cardinal-red-500/20">
-            <div className="text-center">
-              <h4 className="text-xl font-display font-bold mb-2 text-white">
-                ¡Mantente Actualizado!
-              </h4>
-              <p className="text-gray-400 mb-4">
-                Suscríbete para recibir las últimas novedades y ofertas especiales
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="Tu email"
-                  className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cardinal-green-500 transition-colors duration-300"
-                />
-                <button className="btn-success whitespace-nowrap">
-                  Suscribirse
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Bottom Footer */}

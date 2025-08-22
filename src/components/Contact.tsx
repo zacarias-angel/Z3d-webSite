@@ -213,29 +213,7 @@ const Contact: React.FC = () => {
             </div>
 
             {/* Map Placeholder */}
-            <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-8 border border-gray-800">
-              <h3 className="text-2xl font-display font-bold mb-6 text-white">
-                Nuestra Ubicación
-              </h3>
-              
-              <div className="relative h-64 bg-gradient-to-br from-cardinal-red-500/20 to-cardinal-blue-500/20 rounded-lg border border-gray-700">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-cardinal-green-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-2xl">📍</span>
-                    </div>
-                    <p className="text-white font-semibold">Calle Principal 123</p>
-                    <p className="text-gray-400">Ciudad, País</p>
-                  </div>
-                </div>
-                
-                {/* Cardinal Directions on Map */}
-                <div className="absolute top-4 left-4 w-3 h-3 bg-cardinal-black rounded-full"></div>
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-cardinal-red rounded-full"></div>
-                <div className="absolute top-1/2 right-4 transform -translate-y-1/2 w-3 h-3 bg-cardinal-green rounded-full"></div>
-                <div className="absolute top-1/2 left-4 transform -translate-y-1/2 w-3 h-3 bg-cardinal-blue rounded-full"></div>
-              </div>
-            </div>
+            
 
             {/* Social Media */}
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-8 border border-gray-800">
