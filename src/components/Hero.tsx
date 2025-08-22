@@ -55,39 +55,6 @@ const Hero: React.FC = () => {
             Productos personalizados, prototipado rápido y soluciones innovadoras.
           </p>
 
-          {/* Cardinal Directions Visual */}
-          <div className="flex justify-center items-center mb-12">
-            <div className="relative w-32 h-32">
-              {/* North - Black */}
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-16 border-transparent border-b-cardinal-black"></div>
-              
-              {/* South - Red */}
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-16 border-transparent border-t-cardinal-red"></div>
-              
-              {/* East - Green */}
-              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-8 border-b-8 border-l-16 border-transparent border-l-cardinal-green"></div>
-              
-              {/* West - Blue */}
-              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-8 border-b-8 border-r-16 border-transparent border-r-cardinal-blue"></div>
-              
-              {/* Center */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full animate-pulse"></div>
-            </div>
-          </div>
-
-          <button
-            onClick={scrollToNext}
-            className="btn-primary text-lg px-8 py-4 animate-bounce"
-          >
-            Ver Más
-          </button>
-        </div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
         </div>
       </div>
     </section>
