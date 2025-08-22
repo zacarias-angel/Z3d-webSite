@@ -34,14 +34,6 @@ const Footer: React.FC = () => {
     ]
   };
 
-  const socialLinks = [
-    { name: "Facebook", icon: "📘", href: "#", color: "cardinal-red" },
-    { name: "Instagram", icon: "📷", href: "#", color: "cardinal-green" },
-    { name: "Twitter", icon: "🐦", href: "#", color: "cardinal-blue" },
-    { name: "LinkedIn", icon: "💼", href: "#", color: "cardinal-black" },
-    { name: "YouTube", icon: "📺", href: "#", color: "cardinal-red" }
-  ];
-
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {

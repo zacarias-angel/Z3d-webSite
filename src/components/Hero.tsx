@@ -30,7 +30,7 @@ const Hero: React.FC = () => {
           loop
           playsInline
         >
-          <source src="/imagenes/videoIntro.mp4" type="video/mp4" />
+          <source src="/videoIntro.mp4" type="video/mp4" />
           {/* Fallback video or placeholder */}
         </video>
         {/* Overlay */}
