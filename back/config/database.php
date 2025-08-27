@@ -1,10 +1,5 @@
 <?php
-$host = 'localhost';
-$db   = 'u589230024_z3d';
-$user = 'u589230024_z3d'; // Cambia si tu usuario es diferentes
-$pass = 'Y^4LGZh^*:da';     // Cambia si tienes contraseña
-$charset = 'utf8mb4';
-
+// ak van las credenciales de la base de datos
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,

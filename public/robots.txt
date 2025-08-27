@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://z3d.pro/sitemap.xml
+
+# Disallow admin area
+Disallow: /admin
+
+# Allow static assets
+Allow: /static/
+Allow: /back/products/
