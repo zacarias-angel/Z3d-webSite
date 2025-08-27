@@ -26,7 +26,7 @@ const Contact: React.FC = () => {
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     // Here you would typically send the data to your backend
-    console.log('Form submitted:', formData);
+
     
     setIsSubmitting(false);
     setFormData({ name: '', email: '', message: '', service: '' });
@@ -89,9 +89,9 @@ const Contact: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-end">
           {/* Contact Form */}
-          <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-8 border border-gray-800">
+          <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-8 border border-gray-800 ">
             <h3 className="text-2xl font-display font-bold mb-6 text-white">
               Envíanos un Mensaje
             </h3>
@@ -190,7 +190,7 @@ const Contact: React.FC = () => {
           </div>
 
           {/* Contact Information & Map */}
-          <div className="space-y-8">
+          <div className="space-y-8 h-full flex flex-col justify-between">
             {/* Quick Contact */}
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-8 border border-gray-800">
               <h3 className="text-2xl font-display font-bold mb-6 text-white">

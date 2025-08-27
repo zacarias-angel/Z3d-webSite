@@ -1,0 +1,14 @@
+# Configuración para sesiones PHP
+php_value session.cookie_lifetime 1800
+php_value session.gc_maxlifetime 1800
+php_value session.cookie_httponly 1
+php_value session.cookie_secure 0
+php_value session.cookie_samesite "Lax"
+php_value session.use_strict_mode 1
+
+# Habilitar rewrite engine
+RewriteEngine On
+
+# Manejar preflight OPTIONS requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]

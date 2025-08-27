@@ -10,20 +10,45 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // URL base para los endpoints PHP en el servidor
+  const API_BASE_URL = 'https://z3d.pro/back';
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    // Simulate login delay
-    setTimeout(() => {
-      if (username === 'admin' && password === 'admin') {
-        localStorage.setItem('z3d_admin_logged', 'true');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        credentials: 'include', // Incluir cookies de sesión
+        body: JSON.stringify({
+          admin: username,
+          password: password
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Ya no necesitamos guardar en localStorage, PHP maneja la sesión
         onLoginSuccess();
       } else {
-        setError('Usuario o contraseña incorrectos');
+        setError(data.error || 'Usuario o contraseña incorrectos');
       }
+    } catch (err) {
+      setError('Error de conexión al servidor');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
