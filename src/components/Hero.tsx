@@ -6,7 +6,7 @@ const Hero: React.FC = () => {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.play().catch(error => {
-        console.log('Video autoplay failed:', error);
+  
       });
     }
   }, []);

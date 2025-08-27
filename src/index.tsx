@@ -4,6 +4,13 @@ import './index.css';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 
+// Suprimir logs de desarrollo si es necesario
+if (process.env.NODE_ENV === 'production') {
+  console.log = () => {};
+  console.info = () => {};
+  console.warn = () => {};
+}
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

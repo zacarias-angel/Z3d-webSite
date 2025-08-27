@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const Contact: React.FC = () => {
+  const location = useLocation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -8,6 +10,29 @@ const Contact: React.FC = () => {
     service: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Efecto para manejar datos pre-rellenados desde Products
+  useEffect(() => {
+    if (location.state?.prefillData) {
+      const { service, message } = location.state.prefillData;
+      setFormData(prev => ({
+        ...prev,
+        service: service || '',
+        message: message || ''
+      }));
+      
+      // Limpiar el state después de usarlo
+      window.history.replaceState({}, document.title);
+      
+      // Scroll al formulario
+      setTimeout(() => {
+        const contactSection = document.getElementById('contact');
+        if (contactSection) {
+          contactSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location.state]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -20,11 +45,35 @@ const Contact: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log('Form submitted:', formData);
-    setIsSubmitting(false);
-    setFormData({ name: '', email: '', message: '', service: '' });
-    alert('¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.');
+    
+    try {
+      const response = await fetch('https://z3d.pro/back/contact/send-email.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          service: formData.service,
+          message: formData.message
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.');
+        setFormData({ name: '', email: '', message: '', service: '' });
+      } else {
+        alert('Error al enviar el mensaje: ' + (data.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error de conexión. Por favor, intenta nuevamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Sin la sección de ubicación
@@ -32,13 +81,13 @@ const Contact: React.FC = () => {
     {
       icon: "📧",
       title: "Email",
-      content: "info@z3d.com",
+      content: "consultas@z3d.com",
       color: "cardinal-green"
     },
     {
       icon: "📞",
       title: "Teléfono",
-      content: "+1 (555) 123-4567",
+      content: "+54 9 1164165517",
       color: "cardinal-blue"
     },
     {
@@ -127,7 +176,6 @@ const Contact: React.FC = () => {
                       className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cardinal-blue-500 transition-colors duration-300"
                     >
                       <option value="">Selecciona un servicio</option>
-                      <option value="prototipado">Prototipado Rápido</option>
                       <option value="industrial">Piezas Industriales</option>
                       <option value="arquitectura">Modelos Arquitectónicos</option>
                       <option value="juguetes">Juguetes Personalizados</option>
@@ -171,7 +219,7 @@ const Contact: React.FC = () => {
                 </form>
               </div>
               {/* Información de contacto y redes sociales */}
-              <div className="space-y-8">
+              <div className="space-y-8 flex flex-col justify-between">
                 <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-8 border border-gray-800">
                   <h3 className="text-2xl font-display font-bold mb-6 text-white">
                     Información de Contacto
@@ -196,21 +244,21 @@ const Contact: React.FC = () => {
                   </h3>
                   <div className="flex space-x-4">
                     {/* Facebook */}
-                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-[#1877F3] rounded-full flex items-center justify-center hover:bg-[#145db2] transition-colors duration-300">
-                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.406.595 24 1.326 24h11.495v-9.294H9.691v-3.622h3.13V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.406 24 22.674V1.326C24 .592 23.406 0 22.675 0"/></svg>
-                    </a>
+                    <a href="https://www.facebook.com/share/16owHjAH2t/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-[#1877F3] rounded-full flex items-center justify-center hover:bg-[#145db2] transition-colors duration-300" title="Facebook">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.406.595 24 1.326 24h11.495v-9.294H9.691v-3.622h3.13V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.406 24 22.674V1.326C24 .592 23.406 0 22.675 0"/></svg>
+              </a>
                     {/* Instagram */}
-                    <a href="https://www.instagram.com/zpro.3d?igsh=ZDVibm42a3NvamFh" target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500 rounded-full flex items-center justify-center hover:from-pink-600 hover:via-red-600 hover:to-yellow-600 transition-colors duration-300">
-                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.974 1.246 2.241 1.308 3.608.058 1.266.069 1.646.069 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.974.974-2.241 1.246-3.608 1.308-1.266.058-1.646.069-4.85.069s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.974-.974-1.246-2.241-1.308-3.608C2.175 15.647 2.163 15.267 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608C4.515 2.567 5.782 2.295 7.148 2.233 8.414 2.175 8.794 2.163 12 2.163zm0-2.163C8.741 0 8.332.012 7.052.07 5.771.128 4.659.334 3.678 1.315c-.98.98-1.187 2.092-1.245 3.373C2.012 5.668 2 6.077 2 12c0 5.923.012 6.332.07 7.612.058 1.281.265 2.393 1.245 3.373.98.98 2.092 1.187 3.373 1.245C8.332 23.988 8.741 24 12 24s3.668-.012 4.948-.07c1.281-.058 2.393-.265 3.373-1.245.98-.98 1.187-2.092 1.245-3.373.058-1.28.07-1.689.07-7.612 0-5.923-.012-6.332-.07-7.612-.058-1.281-.265-2.393-1.245-3.373-.98-.98-2.092-1.187-3.373-1.245C15.668.012 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm7.2-10.406a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
-                    </a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500 rounded-full flex items-center justify-center hover:from-pink-600 hover:via-red-600 hover:to-yellow-600 transition-colors duration-300" title="Instagram">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.974 1.246 2.241 1.308 3.608.058 1.266.069 1.646.069 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.974.974-2.241 1.246-3.608 1.308-1.266.058-1.646.069-4.85.069s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.974-.974-1.246-2.241-1.308-3.608C2.175 15.647 2.163 15.267 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608C4.515 2.567 5.782 2.295 7.148 2.233 8.414 2.175 8.794 2.163 12 2.163zm0-2.163C8.741 0 8.332.012 7.052.07 5.771.128 4.659.334 3.678 1.315c-.98.98-1.187 2.092-1.245 3.373C2.012 5.668 2 6.077 2 12c0 5.923.012 6.332.07 7.612.058 1.281.265 2.393 1.245 3.373.98.98 2.092 1.187 3.373 1.245C8.332 23.988 8.741 24 12 24s3.668-.012 4.948-.07c1.281-.058 2.393-.265 3.373-1.245.98-.98 1.187-2.092 1.245-3.373.058-1.28.07-1.689.07-7.612 0-5.923-.012-6.332-.07-7.612-.058-1.281-.265-2.393-1.245-3.373-.98-.98-2.092-1.187-3.373-1.245C15.668.012 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm7.2-10.406a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
+              </a>
                     {/* TikTok (SVG oficial) */}
-                    <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors duration-300" title="TikTok">
-                      <svg className="w-6 h-6 text-white" viewBox="0 0 48 48" fill="none"><g><path d="M41.5 17.5c-3.6 0-6.5-2.9-6.5-6.5V6h-6.5v25.5c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.7 0 1.3.2 1.9.5v-6.2c-.6-.1-1.3-.2-1.9-.2-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10V23c1.9 1.1 4.1 1.8 6.5 1.8V17.5z" fill="#fff"/></g></svg>
-                    </a>
+                    <a href="https://www.tiktok.com/@zpro.3d?_t=ZM-8zEFiM3PBmH&_r=1" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors duration-300" title="TikTok">
+                <svg className="w-5 h-5 text-white" viewBox="0 0 48 48" fill="none"><g><path d="M41.5 17.5c-3.6 0-6.5-2.9-6.5-6.5V6h-6.5v25.5c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.7 0 1.3.2 1.9.5v-6.2c-.6-.1-1.3-.2-1.9-.2-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10V23c1.9 1.1 4.1 1.8 6.5 1.8V17.5z" fill="#fff"/></g></svg>
+              </a>
                     {/* WhatsApp */}
-                    <a href="https://wa.me/" target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-[#25D366] rounded-full flex items-center justify-center hover:bg-[#1da851] transition-colors duration-300">
-                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.26-1.64A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.19-1.24-6.19-3.48-8.52zM12 22c-1.85 0-3.68-.5-5.26-1.44l-.38-.22-3.72.98.99-3.62-.24-.37A9.94 9.94 0 0 1 2 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10zm5.2-7.8c-.28-.14-1.65-.81-1.9-.9-.25-.09-.43-.14-.61.14-.18.28-.7.9-.86 1.08-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.13-.13.28-.34.42-.51.14-.17.18-.29.28-.48.09-.19.05-.36-.02-.5-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47-.16-.01-.35-.01-.54-.01-.19 0-.5.07-.76.34-.26.27-1 1-1 2.43 0 1.43 1.03 2.81 1.18 3 .15.19 2.03 3.1 4.93 4.23.69.3 1.23.48 1.65.61.69.22 1.32.19 1.81.12.55-.08 1.65-.67 1.89-1.32.23-.65.23-1.2.16-1.32-.07-.12-.25-.19-.53-.33z"/></svg>
-                    </a>
+                    <a href="https://wa.me/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-[#25D366] rounded-full flex items-center justify-center hover:bg-[#1da851] transition-colors duration-300" title="WhatsApp">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.26-1.64A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.19-1.24-6.19-3.48-8.52zM12 22c-1.85 0-3.68-.5-5.26-1.44l-.38-.22-3.72.98.99-3.62-.24-.37A9.94 9.94 0 0 1 2 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10zm5.2-7.8c-.28-.14-1.65-.81-1.9-.9-.25-.09-.43-.14-.61.14-.18.28-.7.9-.86 1.08-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.13-.13.28-.34.42-.51.14-.17.18-.29.28-.48.09-.19.05-.36-.02-.5-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47-.16-.01-.35-.01-.54-.01-.19 0-.5.07-.76.34-.26.27-1 1-1 2.43 0 1.43 1.03 2.81 1.18 3 .15.19 2.03 3.1 4.93 4.23.69.3 1.23.48 1.65.61.69.22 1.32.19 1.81.12.55-.08 1.65-.67 1.89-1.32.23-.65.23-1.2.16-1.32-.07-.12-.25-.19-.53-.33z"/></svg>
+              </a>
                   </div>
                 </div>
               </div>

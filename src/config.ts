@@ -21,9 +21,9 @@ export const config = {
     }
   },
   contact: {
-    email: 'info@z3d.com',
-    phone: '+1 (555) 123-4567',
-    address: 'Calle Principal 123, Ciudad',
+    email: 'consultas@z3d.com',
+    phone: '+54 9 1164165517',
+    address: 'Quilmes, Buenos Aires, Argentina',
     hours: 'Lun-Vie: 9:00 - 18:00'
   }
 };
