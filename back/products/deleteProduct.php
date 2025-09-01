@@ -3,18 +3,10 @@ require_once '../config/headers.php';
 require_once '../config/database.php';
 require_once '../config/session.php';
 
-// Configuración de sesión más permisiva para desarrollo
-ini_set('session.cookie_lifetime', 1800);
-ini_set('session.gc_maxlifetime', 1800);
-ini_set('session.cookie_httponly', 0); // Cambiar a 0 para debug
-ini_set('session.cookie_secure', 0);
-ini_set('session.cookie_samesite', 'None'); // Cambiar a None para cross-origin
-ini_set('session.cookie_domain', ''); // Dominio vacío para permitir cross-origin
-
 // Iniciar sesión de forma segura
 startSecureSession();
 
-// Verificar si el usuario está logueado usando la estructura que prefieres
+// Verificar si el usuario está logueado usando la estructura correcta
 $session_duration = 1800; // 30 minutos
 
 if (empty($_SESSION['Activo']) || 
@@ -31,29 +23,42 @@ if (empty($_SESSION['Activo']) ||
 $_SESSION['last_activity'] = time();
 
 try {
-    // Recibe datos JSON
-    $data = json_decode(file_get_contents('php://input'), true);
-
-    $id = $data['id'] ?? null;
-
-    if (!$id) {
-        echo json_encode(['success' => false, 'error' => 'ID de producto requerido']);
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    if (!$input || !isset($input['id'])) {
+        echo json_encode(['success' => false, 'error' => 'ID requerido']);
         exit;
     }
-
-    // Obtener conexión
-    $pdo = getConnection();
-
-    $stmt = $pdo->prepare("DELETE FROM productos WHERE id = ?");
-    $success = $stmt->execute([$id]);
     
-    if ($success && $stmt->rowCount() > 0) {
-        echo json_encode(['success' => true, 'message' => 'Producto eliminado correctamente']);
+    $pdo = getConnection();
+    
+    // Obtener el tipo de datos a eliminar
+    $type = $input['type'] ?? 'products';
+    
+    if ($type === 'offers') {
+        $stmt = $pdo->prepare("DELETE FROM oferta WHERE id = ?");
+        $stmt->execute([$input['id']]);
+        
+        if ($stmt->rowCount() > 0) {
+            echo json_encode(['success' => true, 'message' => 'Oferta eliminada exitosamente']);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Oferta no encontrada']);
+        }
     } else {
-        echo json_encode(['success' => false, 'error' => 'No se pudo eliminar el producto o no existe']);
+        $stmt = $pdo->prepare("DELETE FROM productos WHERE id = ?");
+        $stmt->execute([$input['id']]);
+        
+        if ($stmt->rowCount() > 0) {
+            echo json_encode(['success' => true, 'message' => 'Producto eliminado exitosamente']);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Producto no encontrado']);
+        }
     }
-
+    
 } catch (Exception $e) {
-    echo json_encode(handleDatabaseError($e));
+    echo json_encode([
+        'success' => false,
+        'error' => 'Error al eliminar: ' . $e->getMessage()
+    ]);
 }
 ?>

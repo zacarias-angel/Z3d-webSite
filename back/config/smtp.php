@@ -4,7 +4,7 @@
  * Este archivo contiene la configuración para enviar emails usando SMTP de Hostinger con PHPMailer
  */
 
-// credenciales de coreo de z3d
+
 
 // Emails de destino donde llegarán las consultas (múltiples destinatarios)
 define('DESTINATION_EMAILS', [

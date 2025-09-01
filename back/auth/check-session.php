@@ -3,20 +3,20 @@ require_once '../config/headers.php';
 require_once '../config/database.php';
 require_once '../config/session.php';
 
-// Configuración de sesión más permisiva para desarrollo
-ini_set('session.cookie_lifetime', 1800);
-ini_set('session.gc_maxlifetime', 1800);
-ini_set('session.cookie_httponly', 0); // Cambiar a 0 para debug
-ini_set('session.cookie_secure', 0);
-ini_set('session.cookie_samesite', 'None'); // Cambiar a None para cross-origin
-ini_set('session.cookie_domain', ''); // Dominio vacío para permitir cross-origin
-
 // Iniciar sesión de forma segura
 startSecureSession();
 
 try {
     // Debug: Verificar si hay cookie de sesión
     $has_session_cookie = isset($_COOKIE[session_name()]);
+    
+    // Debug: Log de información de sesión
+    error_log("Check-session debug - Session ID: " . session_id());
+    error_log("Check-session debug - Has cookie: " . ($has_session_cookie ? 'yes' : 'no'));
+    error_log("Check-session debug - Session empty: " . (empty($_SESSION) ? 'yes' : 'no'));
+    error_log("Check-session debug - Activo exists: " . (isset($_SESSION['Activo']) ? 'yes' : 'no'));
+    error_log("Check-session debug - Activo value: " . ($_SESSION['Activo'] ?? 'no existe'));
+    error_log("Check-session debug - admin_id: " . ($_SESSION['admin_id'] ?? 'no existe'));
     
     // Verificar si la sesión está activa usando la estructura que prefieres
     $session_duration = 1800; // 30 minutos

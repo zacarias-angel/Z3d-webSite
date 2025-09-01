@@ -1,5 +1,6 @@
 <?php
-// ak van las credenciales de la base de datos
+
+
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,

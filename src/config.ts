@@ -9,8 +9,7 @@ export const config = {
     timeout: 10000
   },
   admin: {
-    key: 'z3d_admin_2024',
-    shortcut: 'Ctrl+Alt+A'
+    key: 'z3d_admin_2024'
   },
   colors: {
     cardinal: {

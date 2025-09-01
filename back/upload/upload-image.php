@@ -33,6 +33,8 @@ if (empty($_SESSION['Activo']) ||
 $_SESSION['last_activity'] = time();
 
 try {
+
+    
     // Verificar si se recibió un archivo
     if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
         echo json_encode([
@@ -79,17 +81,19 @@ try {
     $uniqueName = $baseName . '_' . time() . '_' . uniqid();
     $webpName = $uniqueName . '.webp';
 
-    // Crear directorio en el frontend public (ruta absoluta)
-    $uploadDir = '/home/z3d/public_html/public/imagenes/';
-    if (!is_dir($uploadDir)) {
-        if (!mkdir($uploadDir, 0755, true)) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'Error al crear el directorio de imágenes'
-            ]);
-            exit;
-        }
+    // Obtener el tipo de imagen (productos u ofertas)
+    $type = $_POST['type'] ?? 'products';
+    
+
+    
+    // Definir directorio de upload según el tipo
+    if ($type === 'offers') {
+        $uploadDir = '../../public/imagenes/imgOferta/';
+    } else {
+        $uploadDir = '../../public/imagenes/';
     }
+    
+
 
     // Verificar si ya existe un archivo con ese nombre
     $webpPath = $uploadDir . $webpName;
@@ -164,9 +168,13 @@ try {
     // Redimensionar
     imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
+
+    
     // Guardar como WebP
     $quality = 80; // Calidad WebP (0-100)
-    if (!imagewebp($newImage, $webpPath, $quality)) {
+    $saveResult = imagewebp($newImage, $webpPath, $quality);
+    
+    if (!$saveResult) {
         echo json_encode([
             'success' => false,
             'error' => 'Error al guardar la imagen WebP'
@@ -184,18 +192,26 @@ try {
 
 
 
-         echo json_encode([
-         'success' => true,
-         'message' => 'Imagen subida exitosamente',
-         'data' => [
-             'filename' => $webpName,
-             'original_name' => $fileName,
-             'size_kb' => $fileSizeKB,
-             'width' => $newWidth,
-             'height' => $newHeight,
-             'url' => 'https://z3d.pro/public/imagenes/' . $webpName  // URL completa del servidor
-         ]
-     ]);
+    // Construir URL según el tipo
+    if ($type === 'offers') {
+        $imageUrl = 'https://z3d.pro/public/imagenes/imgOferta/' . $webpName;
+    } else {
+        // Usar la ruta relativa para productos
+        $imageUrl = 'https://z3d.pro/public/imagenes/' . $webpName;
+    }
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Imagen subida exitosamente',
+        'data' => [
+            'filename' => $webpName,
+            'original_name' => $fileName,
+            'size_kb' => $fileSizeKB,
+            'width' => $newWidth,
+            'height' => $newHeight,
+            'url' => $imageUrl  // URL completa del servidor
+        ]
+    ]);
 
 } catch (Exception $e) {
     echo json_encode([

@@ -18,7 +18,6 @@ export const isLoggedIn = async (): Promise<boolean> => {
     }
     
     const data = await response.json();
-    console.log('Debug session data:', data);
     
     return data.success && data.logged_in;
   } catch (error) {
@@ -87,7 +86,6 @@ export const testServerConnection = async () => {
     });
     
     const data = await response.json();
-    console.log('Test de conexión:', { success: data.success, session_active: data.session_active });
     return data;
   } catch (error) {
     console.warn('Error en test de conexión');

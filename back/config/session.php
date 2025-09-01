@@ -4,9 +4,9 @@
 // Configurar duración de sesión en 30 minutos
 ini_set('session.cookie_lifetime', 1800);
 ini_set('session.gc_maxlifetime', 1800);
-ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_httponly', 0); // Cambiar a 0 para desarrollo
 ini_set('session.cookie_secure', 0); // Cambiar a 1 en producción con HTTPS
-ini_set('session.cookie_samesite', 'Lax');
+ini_set('session.cookie_samesite', 'None'); // Cambiar a None para cross-origin
 ini_set('session.use_strict_mode', 1);
 ini_set('session.use_only_cookies', 1);
 

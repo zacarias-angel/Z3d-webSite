@@ -1,15 +1,10 @@
 <?php
 require_once '../config/headers.php';
 require_once '../config/database.php';
+require_once '../config/session.php';
 
-// Configuración de sesión más permisiva para desarrollo
-ini_set('session.cookie_lifetime', 1800);
-ini_set('session.gc_maxlifetime', 1800);
-ini_set('session.cookie_httponly', 0); // Cambiar a 0 para debug
-ini_set('session.cookie_secure', 0);
-ini_set('session.cookie_samesite', 'None'); // Cambiar a None para cross-origin
-ini_set('session.cookie_domain', ''); // Dominio vacío para permitir cross-origin
-session_start();
+// Iniciar sesión de forma segura
+startSecureSession();
 
 try {
     $data = json_decode(file_get_contents('php://input'), true);
@@ -36,9 +31,14 @@ try {
         $_SESSION['admin_name'] = $user['Admin'];
         $_SESSION['last_activity'] = time();
         
+        // Debug: Verificar que la sesión se estableció correctamente
+        error_log("Login debug - Session ID: " . session_id());
+        error_log("Login debug - Activo: " . ($_SESSION['Activo'] ? 'true' : 'false'));
+        error_log("Login debug - admin_id: " . $_SESSION['admin_id']);
+        error_log("Login debug - admin_name: " . $_SESSION['admin_name']);
+        
         // Forzar la escritura de la sesión
         session_write_close();
-        session_start();
         
         echo json_encode([
             'success' => true, 
@@ -47,7 +47,12 @@ try {
                 'admin' => $user['Admin']
             ],
             'message' => 'Login exitoso',
-            'session_id' => session_id()
+            'session_id' => session_id(),
+            'debug' => [
+                'session_activo' => $_SESSION['Activo'] ?? 'no existe',
+                'session_admin_id' => $_SESSION['admin_id'] ?? 'no existe',
+                'session_admin_name' => $_SESSION['admin_name'] ?? 'no existe'
+            ]
         ]);
     } else {
         echo json_encode(['success' => false, 'error' => 'Credenciales incorrectas']);

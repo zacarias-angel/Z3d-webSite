@@ -1,86 +1,124 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface SpecialOffer {
   id: number;
-  title: string;
-  description: string;
-  originalPrice: number;
-  discountPrice: number;
-  discountPercentage: number;
-  image: string;
-  category: string;
-  validUntil: string;
-  stock: number;
+  titulo: string;
+  precio: number;
+  descripcion: string;
+  img?: string;
 }
 
 const News: React.FC = () => {
-  const specialOffers: SpecialOffer[] = [
-    {
-      id: 1,
-      title: "Prototipado Rápido - 30% OFF",
-      description: "Prototipado rápido en PLA/PETG con acabado profesional. Oferta limitada por tiempo.",
-      originalPrice: 35.00,
-      discountPrice: 24.50,
-      discountPercentage: 30,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=250&fit=crop",
-      category: "Prototipado",
-      validUntil: "2024-01-31",
-      stock: 15
-    },
-    {
-      id: 2,
-      title: "Piezas Industriales - Liquidación",
-      description: "Piezas resistentes en ABS/PC para uso industrial. Stock limitado disponible.",
-      originalPrice: 60.00,
-      discountPrice: 42.00,
-      discountPercentage: 30,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=250&fit=crop",
-      category: "Industrial",
-      validUntil: "2024-01-25",
-      stock: 8
-    },
-    {
-      id: 3,
-      title: "Modelos Arquitectónicos - 25% OFF",
-      description: "Maquetas detalladas para presentaciones arquitectónicas. Oferta especial para estudiantes.",
-      originalPrice: 45.00,
-      discountPrice: 33.75,
-      discountPercentage: 25,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=250&fit=crop",
-      category: "Arquitectura",
-      validUntil: "2024-02-05",
-      stock: 12
-    },
-    {
-      id: 4,
-      title: "Juguetes Personalizados - 2x1",
-      description: "Juguetes únicos y personalizados para niños. Lleva 2 por el precio de 1.",
-      originalPrice: 25.00,
-      discountPrice: 25.00,
-      discountPercentage: 50,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=250&fit=crop",
-      category: "Juguetes",
-      validUntil: "2024-01-28",
-      stock: 20
-    }
-  ];
+  const [specialOffers, setSpecialOffers] = useState<SpecialOffer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalOffers, setTotalOffers] = useState(0);
+  const [offersPerPage] = useState(6);
+  const navigate = useNavigate();
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+  const API_BASE_URL = 'https://z3d.pro/back';
+
+  // Cargar ofertas especiales desde la API
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_BASE_URL}/products/getProducts.php?type=offers&page=${currentPage}&limit=${offersPerPage}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          setSpecialOffers(data.offers || []);
+          setTotalPages(data.totalPages || 1);
+          setTotalOffers(data.totalOffers || 0);
+        } else {
+          setError(data.error || 'Error al cargar ofertas');
+        }
+      } catch (err) {
+        setError('Error de conexión al servidor');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOffers();
+  }, [currentPage, offersPerPage]);
+
+  const handleConsultaProducto = (offer: SpecialOffer) => {
+    // Crear mensaje predeterminado con información de la oferta
+    const mensajePredeterminado = `Hola, estoy interesado en la siguiente oferta especial:
+
+🔥 OFERTA: ${offer.titulo}
+💰 PRECIO: $${offer.precio}
+📝 DESCRIPCIÓN: ${offer.descripcion}
+
+Me gustaría obtener más información sobre:
+• Disponibilidad de la oferta
+• Tiempos de entrega
+• Opciones de personalización
+• Condiciones de pago
+• Garantías
+• Proceso de reserva
+
+Por favor, contactenme para discutir los detalles y confirmar mi interés en esta oferta especial.
+
+¡Gracias!`;
+
+    // Navegar al formulario de contacto con los datos pre-rellenados
+    navigate('/#contact', { 
+      state: { 
+        prefillData: {
+          service: offer.titulo,
+          message: mensajePredeterminado
+        }
+      }
     });
   };
 
-  const getDaysRemaining = (dateString: string) => {
-    const today = new Date();
-    const endDate = new Date(dateString);
-    const diffTime = endDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 0;
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (loading) {
+    return (
+      <section id="news" className="section-full bg-gradient-to-bl from-black via-gray-900 to-black">
+        <div className="section-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6">
+              <span className="glow-red">Ofertas</span>{" "}
+              <span className="glow-green">de la Semana</span>{" "}
+              <span className="glow-blue">&</span>{" "}
+              <span className="glow-red">Liquidaciones</span>
+            </h2>
+            <div className="flex justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cardinal-red-500"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="news" className="section-full bg-gradient-to-bl from-black via-gray-900 to-black">
+        <div className="section-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6">
+              <span className="glow-red">Ofertas</span>{" "}
+              <span className="glow-green">de la Semana</span>{" "}
+              <span className="glow-blue">&</span>{" "}
+              <span className="glow-red">Liquidaciones</span>
+            </h2>
+            <p className="text-red-400 text-lg">{error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="news" className="section-full bg-gradient-to-bl from-black via-gray-900 to-black">
@@ -98,123 +136,129 @@ const News: React.FC = () => {
         </div>
 
         {/* Cardinal Directions Timeline */}
-        <div className="flex justify-center mb-12">
-          <div className="relative">
-            <div className="flex items-center space-x-8">
-              <div className="text-center">
-                <div className="w-4 h-4 bg-cardinal-black rounded-full mb-2"></div>
-                <span className="text-xs text-gray-400">Ofertas</span>
-              </div>
-              <div className="w-16 h-0.5 bg-gradient-to-r from-cardinal-black to-cardinal-red"></div>
-              <div className="text-center">
-                <div className="w-4 h-4 bg-cardinal-red rounded-full mb-2 animate-pulse"></div>
-                <span className="text-xs text-gray-400">Liquidaciones</span>
-              </div>
-              <div className="w-16 h-0.5 bg-gradient-to-r from-cardinal-red to-cardinal-green"></div>
-              <div className="text-center">
-                <div className="w-4 h-4 bg-cardinal-green rounded-full mb-2"></div>
-                <span className="text-xs text-gray-400">Descuentos</span>
-              </div>
-              <div className="w-16 h-0.5 bg-gradient-to-r from-cardinal-green to-cardinal-blue"></div>
-              <div className="text-center">
-                <div className="w-4 h-4 bg-cardinal-blue rounded-full mb-2"></div>
-                <span className="text-xs text-gray-400">Especiales</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Special Offers Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {specialOffers.map((offer) => (
-            <article
-              key={offer.id}
-              className="group relative bg-gray-900/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-800 hover:border-cardinal-red-500 transition-all duration-300 transform hover:scale-105"
-            >
-              {/* Discount Badge */}
-              <div className="absolute top-4 left-4 z-10">
-                <div className="bg-cardinal-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                  -{offer.discountPercentage}%
-                </div>
-              </div>
+        {specialOffers.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {specialOffers.map((offer) => (
+              <article
+                key={offer.id}
+                className="group relative bg-gray-900/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-800 hover:border-cardinal-red-500 transition-all duration-300 transform hover:scale-105"
+              >
+                                 {/* Article Image */}
+                 <div className="relative aspect-[4/3] overflow-hidden">
+                   <img
+                     src={offer.img || "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop"}
+                     alt={offer.titulo}
+                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                     onError={(e) => {
+                       const target = e.target as HTMLImageElement;
+                       target.src = "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop";
+                     }}
+                   />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                 </div>
 
-              {/* Stock Badge */}
-              <div className="absolute top-4 right-4 z-10">
-                <div className="bg-cardinal-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                  Stock: {offer.stock}
-                </div>
-              </div>
+                {/* Article Content */}
+                <div className="p-6">
+                  <h3 className="text-xl font-display font-semibold mb-3 text-white group-hover:text-cardinal-red-400 transition-colors duration-300">
+                    {offer.titulo}
+                  </h3>
+                  
+                  <p className="text-gray-400 mb-4 text-sm leading-relaxed">
+                    {offer.descripcion}
+                  </p>
 
-              {/* Article Image */}
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src={offer.image}
-                  alt={offer.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                
-                {/* Category Badge */}
-                <div className="absolute bottom-4 left-4">
-                  <span className="px-3 py-1 text-xs font-semibold rounded-full bg-cardinal-blue-500 text-white">
-                    {offer.category}
-                  </span>
-                </div>
-              </div>
+                  {/* Pricing */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl font-display font-bold text-cardinal-green-400">
+                        ${offer.precio.toFixed(2)}
+                      </span>
+                    </div>
+                    <span className="text-sm text-gray-400">por unidad</span>
+                  </div>
 
-              {/* Article Content */}
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-gray-500">
-                    Válido hasta: {formatDate(offer.validUntil)}
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-cardinal-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-gray-400">
-                      {getDaysRemaining(offer.validUntil)} días restantes
-                    </span>
+                  {/* Action Buttons */}
+                  <div className="flex space-x-3">
+                    <button className="flex-1 bg-white text-black px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors duration-300 text-sm">
+                      Ver Detalles
+                    </button>
+                    <button 
+                      onClick={() => handleConsultaProducto(offer)}
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-300 text-sm"
+                    >
+                      Consulta este producto
+                    </button>
                   </div>
                 </div>
 
-                <h3 className="text-xl font-display font-semibold mb-3 text-white group-hover:text-cardinal-red-400 transition-colors duration-300">
-                  {offer.title}
-                </h3>
-                
-                <p className="text-gray-400 mb-4 text-sm leading-relaxed">
-                  {offer.description}
-                </p>
+                {/* Hover Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-cardinal-red-500/5 to-cardinal-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-8 border border-gray-800">
+              <div className="text-6xl mb-4">🎯</div>
+              <h3 className="text-xl font-display font-semibold mb-2 text-white">
+                No hay ofertas especiales disponibles
+              </h3>
+              <p className="text-gray-400 text-lg">
+                En este momento no tenemos ofertas especiales activas. 
+                ¡Vuelve pronto para aprovechar nuestras mejores promociones!
+              </p>
+            </div>
+          </div>
+        )}
 
-                {/* Pricing */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl font-display font-bold text-cardinal-green-400">
-                      ${offer.discountPrice.toFixed(2)}
-                    </span>
-                    <span className="text-lg text-gray-500 line-through">
-                      ${offer.originalPrice.toFixed(2)}
-                    </span>
-                  </div>
-                  <span className="text-sm text-gray-400">por unidad</span>
-                </div>
+        {/* Paginación */}
+        {totalPages > 1 && (
+          <div className="mt-12 flex justify-center">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+              >
+                Anterior
+              </button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
+                    currentPage === page
+                      ? 'bg-cardinal-red-500 text-white'
+                      : 'bg-gray-800 text-white hover:bg-gray-700'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        )}
 
-                {/* Action Buttons */}
-                <div className="flex space-x-3">
-                  <button className="flex-1 bg-white text-black px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors duration-300 text-sm">
-                    Ver Detalles
-                  </button>
-                  <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-300 text-sm">
-                    Comprar
-                  </button>
-                </div>
-              </div>
-
-              {/* Hover Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-cardinal-red-500/5 to-cardinal-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </article>
-          ))}
-        </div>
-
-      
+        {/* Información de paginación */}
+        {totalOffers > 0 && (
+          <div className="text-center mt-4">
+            <p className="text-gray-400 text-sm">
+              Mostrando {((currentPage - 1) * offersPerPage) + 1} - {Math.min(currentPage * offersPerPage, totalOffers)} de {totalOffers} ofertas
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

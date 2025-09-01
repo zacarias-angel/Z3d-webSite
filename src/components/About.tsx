@@ -90,53 +90,7 @@ const About: React.FC = () => {
           {/* Right Column - Visual Elements */}
           <div className="space-y-8">
             {/* Cardinal Directions Compass */}
-            <div className="relative">
-              <div className="w-80 h-80 mx-auto relative">
-                {/* Outer Ring */}
-                <div className="absolute inset-0 rounded-full border-4 border-gray-800"></div>
-                
-                {/* Cardinal Directions */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2">
-                  <div className="text-center">
-                    <div className="w-6 h-6 bg-cardinal-black rounded-full mx-auto mb-2"></div>
-                    <span className="text-sm text-gray-400">Norte</span>
-                  </div>
-                </div>
-                
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2">
-                  <div className="text-center">
-                    <div className="w-6 h-6 bg-cardinal-red rounded-full mx-auto mb-2"></div>
-                    <span className="text-sm text-gray-400">Sur</span>
-                  </div>
-                </div>
-                
-                <div className="absolute right-0 top-1/2 transform translate-x-2 -translate-y-1/2">
-                  <div className="text-center">
-                    <div className="w-6 h-6 bg-cardinal-green rounded-full mx-auto mb-2"></div>
-                    <span className="text-sm text-gray-400">Este</span>
-                  </div>
-                </div>
-                
-                <div className="absolute left-0 top-1/2 transform -translate-x-2 -translate-y-1/2">
-                  <div className="text-center">
-                    <div className="w-6 h-6 bg-cardinal-blue rounded-full mx-auto mb-2"></div>
-                    <span className="text-sm text-gray-400">Oeste</span>
-                  </div>
-                </div>
-
-                {/* Center */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <div className="w-20 h-20 bg-gradient-to-br from-cardinal-red-500 to-cardinal-blue-500 rounded-full flex items-center justify-center animate-pulse">
-                    <span className="text-2xl font-display font-bold text-white">Z3D</span>
-                  </div>
-                </div>
-
-                {/* Connecting Lines */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60">
-                  <div className="w-full h-full border border-gray-700 rounded-full"></div>
-                </div>
-              </div>
-            </div>
+           
 
             {/* Values */}
             <div className="grid grid-cols-2 gap-4">

@@ -58,8 +58,6 @@ const Products: React.FC = () => {
   };
 
   const handleVerMas = (product: Product) => {
-    console.log('Botón Ver Más clickeado para:', product.nombre);
-    
     // Crear mensaje predeterminado con información del producto
     const mensajePredeterminado = `Hola, estoy interesado en el siguiente producto/servicio:
 
@@ -155,33 +153,33 @@ Por favor, contactenme para discutir los detalles y proporcionarme una cotizaci�
                    className="group relative bg-gray-900/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-800 hover:border-cardinal-red-500 transition-all duration-300 transform hover:scale-105 cursor-pointer"
                    onClick={() => handleVerMas(product)}
                  >
-                   {/* Product Image */}
-                   <div className="relative h-48 overflow-hidden">
-                     {product.img ? (
-                       <img
-                         src={product.img}
-                         alt={product.nombre}
-                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                         onError={(e) => {
-                           const target = e.currentTarget as HTMLElement;
-                           target.style.display = 'none';
-                           const sibling = target.nextElementSibling as HTMLElement;
-                           if (sibling) {
-                             sibling.style.display = 'flex';
-                           }
-                         }}
-                       />
-                     ) : null}
-                     <div 
-                       className="w-full h-full flex items-center justify-center text-gray-500 bg-gray-800"
-                       style={{ display: product.img ? 'none' : 'flex' }}
-                     >
-                       <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
-                         <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                       </svg>
-                     </div>
-                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                   </div>
+                                       {/* Product Image */}
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      {product.img ? (
+                        <img
+                          src={product.img}
+                          alt={product.nombre}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            const target = e.currentTarget as HTMLElement;
+                            target.style.display = 'none';
+                            const sibling = target.nextElementSibling as HTMLElement;
+                            if (sibling) {
+                              sibling.style.display = 'flex';
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className="w-full h-full flex items-center justify-center text-gray-500 bg-gray-800"
+                        style={{ display: product.img ? 'none' : 'flex' }}
+                      >
+                        <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    </div>
 
                    {/* Product Info */}
                    <div className="p-6 relative z-10">

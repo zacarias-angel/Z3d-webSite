@@ -2,19 +2,30 @@ import React, { useState, useRef, useCallback } from 'react';
 
 interface ImageUploadProps {
   onImageUploaded: (imageData: { filename: string; url: string }) => void;
+  onImageSelected?: (imageData: { filename: string; url: string }) => void;
   currentImage?: string;
+  type?: 'products' | 'offers';
+  onUploadReady?: (uploadFn: () => Promise<{ filename: string; url: string } | null>) => void;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUploaded, currentImage }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUploaded, onImageSelected, currentImage, type = 'products', onUploadReady }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
   const [debugInfo, setDebugInfo] = useState<any>(null);
   const [preview, setPreview] = useState<string | null>(currentImage || null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const API_BASE_URL = 'https://z3d.pro/back';
+
+  // Exponer la función de upload al componente padre
+  React.useEffect(() => {
+    if (onUploadReady) {
+      onUploadReady(uploadImage);
+    }
+  }, [selectedFile, type]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -32,18 +43,18 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUploaded, currentImage
     
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
-      handleFileUpload(files[0]);
+      handleFileSelect(files[0]);
     }
   }, []);
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      handleFileUpload(files[0]);
+      handleFileSelect(files[0]);
     }
   }, []);
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileSelect = (file: File) => {
     // Validar tipo de archivo
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
@@ -58,6 +69,35 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUploaded, currentImage
       return;
     }
 
+    // Limpiar errores previos
+    setError('');
+    setDebugInfo(null);
+
+    // Crear preview inmediatamente
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Guardar el archivo para subirlo más tarde
+    setSelectedFile(file);
+    
+    // Notificar al componente padre que se seleccionó una imagen
+    if (onImageSelected) {
+      onImageSelected({
+        filename: file.name,
+        url: URL.createObjectURL(file)
+      });
+    }
+  };
+
+  // Función para subir la imagen cuando se envía el formulario
+  const uploadImage = async (): Promise<{ filename: string; url: string } | null> => {
+    if (!selectedFile) {
+      return null;
+    }
+
     setIsUploading(true);
     setError('');
     setDebugInfo(null);
@@ -66,14 +106,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUploaded, currentImage
     try {
       // Crear FormData
       const formData = new FormData();
-      formData.append('image', file);
-
-      // Crear preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      formData.append('image', selectedFile);
+      formData.append('type', type);
 
       // Simular progreso
       const progressInterval = setInterval(() => {
@@ -103,24 +137,26 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUploaded, currentImage
       const data = await response.json();
 
       if (data.success) {
-        // Llamar callback con los datos de la imagen
-        // Ahora la URL es directa desde el frontend
         onImageUploaded({
           filename: data.data.filename,
-          url: data.data.url  // Ya viene como '/imagenes/archivo.webp'
+          url: data.data.url
         });
         
         setError('');
         setDebugInfo(null);
+        setSelectedFile(null); // Limpiar archivo seleccionado
+        return { filename: data.data.filename, url: data.data.url };
       } else {
         setError(data.error || 'Error al subir la imagen');
         setDebugInfo(data.debug || null);
         setPreview(null);
+        return null;
       }
     } catch (err) {
       setError('Error de conexión al subir la imagen');
       setDebugInfo({ error: err instanceof Error ? err.message : 'Error desconocido' });
       setPreview(null);
+      return null;
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
@@ -133,6 +169,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUploaded, currentImage
 
   const removeImage = () => {
     setPreview(null);
+    setSelectedFile(null);
     onImageUploaded({ filename: '', url: '' });
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -161,7 +198,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUploaded, currentImage
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          onChange={handleFileSelect}
+          onChange={handleFileInputChange}
           className="hidden"
         />
 
